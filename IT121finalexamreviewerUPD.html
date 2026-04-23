@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Security 1.0 – Checkpoint Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a24;
+    --surface2: #1e2333;
+    --border: #2a3045;
+    --accent: #4f9eff;
+    --accent2: #7c3aed;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0d0f14 0%, #161a24 50%, #1a1040 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 24px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% -10%, rgba(79,158,255,.18), transparent);
+    pointer-events: none;
+  }
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(79,158,255,.4);
+    border-radius: 100px;
+    padding: 4px 14px;
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-family: var(--mono);
+    font-size: clamp(20px, 4vw, 32px);
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -.02em;
+    margin-bottom: 8px;
+  }
+  header p {
+    color: var(--muted);
+    font-size: 13px;
+    font-family: var(--mono);
+  }
+
+  .tabs-bar {
+    display: flex;
+    gap: 4px;
+    padding: 16px 24px 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  main { max-width: 820px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-title {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title span { color: var(--muted); font-weight: 400; }
+
+  .checkpoint-score {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+  }
+  .checkpoint-score-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .checkpoint-score-value {
+    font-size: 18px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .checkpoint-score-bar {
+    flex: 1;
+    max-width: 200px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 100px;
+    margin: 0 16px;
+    overflow: hidden;
+  }
+  .checkpoint-score-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 100px;
+    transition: width .4s ease;
+    width: 0%;
+  }
+
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: border-color .2s;
+  }
+  .q-card:hover { border-color: #374261; }
+  .q-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent2);
+    letter-spacing: .1em;
+    margin-bottom: 10px;
+  }
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 18px;
+    line-height: 1.6;
+  }
+  .q-text em {
+    font-style: normal;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 13px;
+    background: rgba(79,158,255,.08);
+    padding: 0 4px;
+    border-radius: 3px;
+  }
+  .choose-note {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 14px;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+  }
+  .option:hover { background: #222840; border-color: #3a4462; }
+  .option input { display: none; }
+  .radio-box, .check-box {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+    background: transparent;
+  }
+  .check-box { border-radius: 4px; }
+  .option.selected .radio-box,
+  .option.selected .check-box {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+  .option.selected .radio-box::after,
+  .option.selected .check-box::after {
+    content: '';
+    width: 6px; height: 6px;
+    background: #fff;
+    border-radius: 50%;
+  }
+  .option.selected .check-box::after {
+    width: 10px; height: 10px;
+    background: transparent;
+    border: none;
+    content: '✓';
+    font-size: 11px;
+    color: #fff;
+    border-radius: 0;
+  }
+  .option-label { font-size: 14px; color: var(--text); line-height: 1.5; }
+
+  .option.correct { border-color: var(--correct) !important; background: rgba(34,197,94,.08) !important; }
+  .option.correct .radio-box,
+  .option.correct .check-box { border-color: var(--correct) !important; background: var(--correct) !important; }
+  .option.wrong { border-color: var(--wrong) !important; background: rgba(239,68,68,.08) !important; }
+  .option.wrong .radio-box,
+  .option.wrong .check-box { border-color: var(--wrong) !important; background: var(--wrong) !important; }
+
+  .explanation {
+    display: none;
+    margin-top: 16px;
+    background: rgba(79,158,255,.06);
+    border: 1px solid rgba(79,158,255,.2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #a0aec0;
+    line-height: 1.7;
+  }
+  .explanation.visible { display: block; }
+  .explanation strong { color: var(--accent); font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+
+  .q-card.unanswered { border-color: var(--wrong) !important; background: rgba(239,68,68,.08) !important; }
+  .btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all .15s;
+    font-weight: 700;
+  }
+  .btn-check {
+    background: var(--accent);
+    color: #0d0f14;
+  }
+  .btn-check:hover { background: #6aadff; }
+  .btn-reset {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-reset:hover { color: var(--text); border-color: #3a4462; }
+
+  .checkpoint-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+  }
+  .btn-submit {
+    background: var(--accent);
+    color: #0d0f14;
+  }
+  .btn-submit:hover { background: #6aadff; }
+  .btn-reset-checkpoint {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-reset-checkpoint:hover { color: var(--text); border-color: #3a4462; }
+
+  @media (max-width: 600px) {
+    main { padding: 20px 14px 60px; }
+    .q-card { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Network Security 1.0 · Cisco NetAcad</div>
+  <h1>Checkpoint Exam Review</h1>
+  <p>Modules 11–12 · 13–14 · 15–17 · 18–19 · 20–22</p>
+</header>
+
+<div class="tabs-bar" id="tabsBar">
+  <button class="tab-btn active" data-tab="s1">🛡️ Intrusion Prevention</button>
+  <button class="tab-btn" data-tab="s2">🔌 Layer 2 &amp; Endpoint</button>
+  <button class="tab-btn" data-tab="s3">🔐 Cryptography</button>
+  <button class="tab-btn" data-tab="s4">🔒 VPNs</button>
+  <button class="tab-btn" data-tab="s5">🖥️ ASA</button>
+</div>
+
+<main>
+
+<!-- SECTION 1 – INTRUSION PREVENTION (11–12) -->
+<div class="section active" id="s1">
+  <div class="section-title">Intrusion Prevention <span>Modules 11–12</span></div>
+
+  <div class="checkpoint-score">
+    <span class="checkpoint-score-label">Checkpoint Score</span>
+    <div class="checkpoint-score-bar"><div class="checkpoint-score-fill" id="scoreBar1"></div></div>
+    <span class="checkpoint-score-value" id="scoreVal1">0 / 0</span>
+  </div>
+
+
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 01</div>
+    <div class="q-text">What is an advantage of using an IPS?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It is installed outside of the data traffic flow.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It does not impact network traffic if there is a sensor overload.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It can stop trigger packets.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It has no impact on network latency.</span></label>
+    </div>
+    <div class="explanation">An IPS can stop trigger packets. However, because they are installed inline they add some latency and jitter to the traffic. IDS sensors are passive and cannot stop trigger packets.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 02</div>
+    <div class="q-text">What is a characteristic of an IDS?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It can affect network performance by introducing latency and jitter.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It often requires assistance from other network devices to respond to an attack.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It is installed inline with the network traffic flow.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It can be configured to drop trigger packets that are associated with a connection.</span></label>
+    </div>
+    <div class="explanation">An IDS often requires assistance from other networking devices, such as routers and firewalls, to respond to an attack.</div>
+  </div>
+
+
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 03</div>
+    <div class="q-text">Which tool can perform real-time traffic and port analysis, and can also detect port scans, fingerprinting and buffer overflow attacks?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SIEM</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Nmap</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Snort</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Netflow</span></label>
+    </div>
+    <div class="explanation">Snort is an open source IPS capable of real-time traffic and port analysis, packet logging, content searching/matching, and detecting probes, attacks, port scans, fingerprinting, and buffer overflow attacks.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 04</div>
+    <div class="q-text">Which Snort IPS feature enables a router to download rule sets directly from cisco.com or snort.org?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Snort rule set pull</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Signature allowed listing</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Snort rule set push</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Snort rule set updates</span></label>
+    </div>
+    <div class="explanation">The Snort rule set pull feature allows a router to download rule sets directly from cisco.com or snort.org using one-time commands or periodic automated updates.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 05</div>
+    <div class="q-text">What is a minimum system requirement to activate Snort IPS functionality on a Cisco router?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">At least 4 GB RAM</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">At least 4 GB flash</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ISR 2900 or higher</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">K9 license</span></label>
+    </div>
+    <div class="explanation">Requirements to run Snort IPS: ISR 4300 or higher, K9 license, 8 GB RAM, and 8 GB flash.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 06</div>
+    <div class="q-text">What is PulledPork?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">An open source network IPS that performs real-time traffic analysis and generates alerts when threats are detected on IP networks</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A centralized management tool to push the rule sets based on preconfigured policy, to Cisco routers</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A virtual service container that runs on the Cisco ISR router operating system</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A rule management application that can be used to automatically download Snort rule updates</span></label>
+    </div>
+    <div class="explanation">PulledPork is a rule management application for automatically downloading Snort rule updates. It requires an authorization code (oinkcode) from a snort.org account.</div>
+  </div>
+
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 07</div>
+    <div class="q-text">Which IPS signature trigger category uses a decoy server to divert attacks away from production devices?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Honey pot-based detection</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Policy-based detection</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Pattern-based detection</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Anomaly-based detection</span></label>
+    </div>
+    <div class="explanation">Honey pot-based detection uses a decoy server to attract and divert attacks away from production devices, giving administrators time to analyze incoming attacks.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 08</div>
+    <div class="q-text">What situation will generate a true negative IPS alarm type?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Normal traffic that generates a false alarm</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A verified security incident that is detected</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A known attack that is not detected</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Normal traffic that is correctly being ignored and forwarded</span></label>
+    </div>
+    <div class="explanation">True negative: benign normal traffic is correctly being ignored and forwarded without generating an alert.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 09</div>
+    <div class="q-text">What is provided by the fail open and close functionality of Snort IPS?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Provides the ability to automatically disable problematic signatures that routinely cause false positives</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Blocks the traffic flow or bypasses IPS checking in the event of an IPS engine failure</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Keeps Snort current with the latest threat protection and term-based subscriptions</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Keeps track of the health of the Snort engine running in the service container</span></label>
+    </div>
+    <div class="explanation">The Snort IPS fail open and close functionality can be configured to block traffic flow or bypass IPS checking in the event of an IPS engine failure.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 10</div>
+    <div class="q-text">What is a characteristic of the Community Rule Set type of Snort term-based subscriptions?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It has 60-day delayed access to updated signatures</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It uses Cisco Talos to provide coverage in advance of exploits</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It is fully supported by Cisco</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It is available for free</span></label>
+    </div>
+    <div class="explanation">Community Rule Set is available for free, provides limited coverage, with 30-day delayed signature access and no Cisco support. Subscriber Rule Set is paid and uses Cisco Talos research.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 11</div>
+    <div class="q-text">What is a characteristic of the connectivity policy setting when configuring Snort threat protection?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It attempts to balance network security with network performance</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It prioritizes security over connectivity</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It provides the lowest level of protection</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It enables the highest number of signatures to be verified</span></label>
+    </div>
+    <div class="explanation">Connectivity is the least secure option. Balanced is the mid-range option. Security is the most secure option.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 12</div>
+    <div class="q-text">What is contained in an OVA file?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A current compilation of known threats and prevention mechanisms</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">An installable version of a virtual machine</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A list of atomic and composite signatures</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A set of rules for an IDS or IPS to detect intrusion activity</span></label>
+    </div>
+    <div class="explanation">An OVA (Open Virtualization Archive) file contains a compressed, installable version of a virtual machine.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 13</div>
+    <div class="q-text">What is a network tap?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A Cisco technology that provides statistics on packets flowing through a router or multilayer switch</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A technology used to provide real-time reporting and long-term analysis of security events</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A feature supported on Cisco switches that enables the switch to copy frames and forward them to an analysis device</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A passive device that forwards all traffic and physical layer errors to an analysis device</span></label>
+    </div>
+    <div class="explanation">A network tap is a passive splitting device implemented inline on the network that forwards all traffic, including physical layer errors, to an analysis device.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 14</div>
+    <div class="q-text">Which statement describes the function of the SPAN tool used in a Cisco switch?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It is a secure channel for a switch to send logging to a syslog server.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It provides interconnection between VLANs over multiple switches.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It supports the SNMP trap operation on a switch.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It copies the traffic from one switch port and sends it to another switch port that is connected to a monitoring device.</span></label>
+    </div>
+    <div class="explanation">SPAN (Switched Port Analyzer) mirrors traffic from one port to another port on the same switch where a network analyzer is connected.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 15</div>
+    <div class="q-text">A network administrator is trying to download a valid file from an internal server. However, the process triggers an alert on a NMS tool. What condition describes this alert?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">False negative</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">False positive</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">True negative</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">True positive</span></label>
+    </div>
+    <div class="explanation">A false positive is when an alert is generated for benign activity — normal traffic that should not trigger an alarm but does.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 16</div>
+    <div class="q-text">What is an advantage of HIPS that is not provided by IDS?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">HIPS provides quick analysis of events through detailed logging.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">HIPS deploys sensors at network entry points and protects critical network segments.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">HIPS monitors network processes and protects critical files.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">HIPS protects critical system resources and monitors operating system processes.</span></label>
+    </div>
+    <div class="explanation">HIPS monitors and protects OS and critical system processes specific to that host. It can be thought of as a combination of antivirus, antimalware, and a firewall.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 17</div>
+    <div class="q-text">What information must an IPS track in order to detect attacks matching a composite signature?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The total number of packets in the attack</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The state of packets related to the attack</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The attacking period used by the attacker</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The network bandwidth consumed by all packets</span></label>
+    </div>
+    <div class="explanation">A composite (stateful) signature identifies a sequence of operations across multiple hosts over time. The IPS sensor must maintain state information for the specific attack.</div>
+  </div>
+
+  <div class="checkpoint-footer">
+    <button class="btn btn-submit" onclick="submitCheckpoint(this)">Submit Checkpoint</button>
+    <button class="btn btn-reset-checkpoint" onclick="resetCheckpoint(this)">Reset Checkpoint</button>
+  </div>
+</div>
+
+<!-- SECTION 2 – LAYER 2 & ENDPOINT (13–14) -->
+<div class="section" id="s2">
+  <div class="section-title">Layer 2 &amp; Endpoint Security <span>Modules 13–14</span></div>
+
+  <div class="checkpoint-score">
+    <span class="checkpoint-score-label">Checkpoint Score</span>
+    <div class="checkpoint-score-bar"><div class="checkpoint-score-fill" id="scoreBar2"></div></div>
+    <span class="checkpoint-score-value" id="scoreVal2">0 / 0</span>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 01</div>
+    <div class="q-text">Why are traditional network security perimeters not suitable for the latest consumer-based network endpoint devices?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">These devices are not managed by the corporate IT department.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">These devices pose no risk to security as they are not directly connected to the corporate network.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">These devices connect to the corporate network through public wireless networks.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">These devices are more varied in type and are portable.</span></label>
+    </div>
+    <div class="explanation">Traditional security is not suited for new network devices that are mobile, frequently access cloud storage, and may be personal devices.</div>
+  </div>
+
+
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 02</div>
+    <div class="q-text">In an 802.1x deployment, which device is a supplicant?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">RADIUS server</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Access point</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Switch</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">End-user station</span></label>
+    </div>
+    <div class="explanation">In 802.1x, a supplicant is the end-user device (such as a laptop) attempting to attach to the WLAN.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 03</div>
+    <div class="q-text">A company implements 802.1X security on the corporate network. A PC is attached to the network but has not authenticated yet. Which 802.1X state is associated with this PC?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Err-disabled</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Disabled</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Unauthorized</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Forwarding</span></label>
+    </div>
+    <div class="explanation">When a port is configured for 802.1X, the port starts in the unauthorized state and stays that way until the client has successfully authenticated.</div>
+  </div>
+
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 04</div>
+    <div class="q-text">Which command is used as part of the 802.1X configuration to designate the authentication method that will be used?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">dot1x system-auth-control</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">aaa authentication dot1x</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">aaa new-model</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">dot1x pae authenticator</span></label>
+    </div>
+    <div class="explanation">The <em>aaa authentication dot1x default group radius</em> command specifies RADIUS as the method for 802.1X port-based authentication.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 05</div>
+    <div class="q-text">What is involved in an IP address spoofing attack?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A rogue node replies to an ARP request with its own MAC address for the target IP address.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Bogus DHCPDISCOVER messages are sent to consume all available IP addresses on a DHCP server.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A rogue DHCP server provides false IP configuration parameters to legitimate DHCP clients.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A legitimate network IP address is hijacked by a rogue node.</span></label>
+    </div>
+    <div class="explanation">In an IP address spoofing attack, the IP address of a legitimate network host is hijacked and used by a rogue node to pose as a valid node on the network.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 06</div>
+    <div class="q-text">At which layer of the OSI model does Spanning Tree Protocol operate?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Layer 1</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Layer 2</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Layer 3</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Layer 4</span></label>
+    </div>
+    <div class="explanation">STP is a Layer 2 technology for preventing Layer 2 loops between redundant switch paths.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 07</div>
+    <div class="q-text">A network administrator uses the <em>spanning-tree loopguard default</em> global configuration command to enable Loop Guard on switches. What components in a LAN are protected with Loop Guard?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">All Root Guard enabled ports</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">All PortFast enabled ports</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">All point-to-point links between switches</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">All BPDU Guard enabled ports</span></label>
+    </div>
+    <div class="explanation">The spanning-tree loopguard default command enables Loop Guard on all point-to-point links.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 08</div>
+    <div class="q-text">Which procedure is recommended to mitigate the chances of ARP spoofing?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Enable DHCP snooping on selected VLANs.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Enable IP Source Guard on trusted ports.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Enable DAI on the management VLAN.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Enable port security globally.</span></label>
+    </div>
+    <div class="explanation">To mitigate ARP spoofing: enable DHCP snooping globally and on selected VLANs, enable DAI on selected VLANs, and configure trusted interfaces for DHCP snooping and ARP inspection.</div>
+  </div>
+
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 09</div>
+    <div class="q-text">Which protocol should be used to mitigate the vulnerability of using Telnet to remotely manage network devices?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SNMP</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">TFTP</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SSH</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SCP</span></label>
+    </div>
+    <div class="explanation">SSH encrypts data communications between two network devices. Telnet uses plain text and credentials can be captured if traffic is intercepted.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 10</div>
+    <div class="q-text">How can DHCP spoofing attacks be mitigated?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">By disabling DTP negotiations on nontrunking ports</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">By implementing port security</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">By the application of the ip verify source command to untrusted ports</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">By implementing DHCP snooping on trusted ports</span></label>
+    </div>
+    <div class="explanation">DHCP spoofing attacks can be mitigated by using DHCP snooping on trusted ports.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 11</div>
+    <div class="q-text">What is the behavior of a switch as a result of a successful CAM table attack?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The switch will drop all received frames.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The switch interfaces will transition to the error-disabled state.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The switch will forward all received frames to all other ports.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The switch will shut down.</span></label>
+    </div>
+    <div class="explanation">When the CAM table is full, no new MAC addresses can be added and the switch forwards all received frames to all other ports, allowing an attacker to capture all flooded traffic.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 12</div>
+    <div class="q-text">Which protocol defines port-based authentication to restrict unauthorized hosts from connecting to the LAN through publicly accessible switch ports?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">RADIUS</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">TACACS+</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">802.1x</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SSH</span></label>
+    </div>
+    <div class="explanation">802.1x is an IEEE standard that defines port-based access control, providing protection from unauthorized clients by authenticating each client attempting to connect to the LAN.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 13</div>
+    <div class="q-text">What device is considered a supplicant during the 802.1X authentication process?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The router serving as the default gateway</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The authentication server performing client authentication</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The client that is requesting authentication</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The switch controlling network access</span></label>
+    </div>
+    <div class="explanation">The supplicant is the client requesting network access; the authenticator is the switch controlling physical access; the authentication server performs actual authentication.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 14</div>
+    <div class="q-text">Which term describes the role of a Cisco switch in the 802.1X port-based access control?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Agent</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Supplicant</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Authenticator</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Authentication server</span></label>
+    </div>
+    <div class="explanation">The switch acts as the authenticator — it controls physical access to the network based on the authentication status of the client.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 15</div>
+    <div class="q-text">What type of data does the DLP feature of Cisco Email Security Appliance scan in order to prevent customer data from being leaked outside of the company?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Inbound messages</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Outbound messages</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Messages stored on a client device</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Messages stored on the email server</span></label>
+    </div>
+    <div class="explanation">Cisco ESAs control outbound messages through DLP to ensure outbound messages comply with industry standards and are protected in transit.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 16</div>
+    <div class="q-text">What is the goal of the Cisco NAC framework and the Cisco NAC appliance?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To ensure that only hosts that are authenticated and have had their security posture examined and approved are permitted onto the network</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To monitor data from the company to the ISP in order to build a real-time database of current spam threats</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To provide anti-malware scanning at the network perimeter for both authenticated and non-authenticated devices</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To provide protection against a wide variety of web-based threats including adware and phishing attacks</span></label>
+    </div>
+    <div class="explanation">NAC ensures wired and wireless endpoints that want to gain access to the network adhere to the requirements defined by the security policy.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 17</div>
+    <div class="q-text">Which Cisco solution helps prevent MAC and IP address spoofing attacks?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Port Security</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">DHCP Snooping</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IP Source Guard</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Dynamic ARP Inspection</span></label>
+    </div>
+    <div class="explanation">IP Source Guard (IPSG) prevents MAC and IP address spoofing. DAI prevents ARP spoofing. DHCP Snooping prevents DHCP starvation. Port Security prevents MAC table overflow attacks.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 18</div>
+    <div class="q-text">What Layer 2 attack is mitigated by disabling Dynamic Trunking Protocol?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">VLAN hopping</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">DHCP spoofing</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ARP poisoning</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ARP spoofing</span></label>
+    </div>
+    <div class="explanation">VLAN hopping attacks can be mitigated by disabling DTP and setting the native VLAN of trunk links to VLANs not in use.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 19</div>
+    <div class="q-text">What is the result of a DHCP starvation attack?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Legitimate clients are unable to lease IP addresses.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Clients receive IP address assignments from a rogue DHCP server.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The attacker provides incorrect DNS and default gateway information to clients.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The IP addresses assigned to legitimate clients are hijacked.</span></label>
+    </div>
+    <div class="explanation">DHCP starvation attacks send many DHCPDISCOVER messages to lease the entire pool of available IP addresses, denying them to legitimate hosts (DoS).</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 20</div>
+    <div class="q-text">A network administrator is configuring DAI on a switch with the command <em>ip arp inspection validate dst-mac</em>. What is the purpose of this command?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To check the destination MAC in the Ethernet header against the MAC address table</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To check the destination MAC in the Ethernet header against user-configured ARP ACLs</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To check the destination MAC in the Ethernet header against the target MAC address in the ARP body</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To check the destination MAC in the Ethernet header against the source MAC in the ARP body</span></label>
+    </div>
+    <div class="explanation">Destination MAC validation checks the destination MAC in the Ethernet header against the target MAC address in the ARP body.</div>
+  </div>
+
+  <div class="checkpoint-footer">
+    <button class="btn btn-submit" onclick="submitCheckpoint(this)">Submit Checkpoint</button>
+    <button class="btn btn-reset-checkpoint" onclick="resetCheckpoint(this)">Reset Checkpoint</button>
+  </div>
+</div>
+
+<!-- SECTION 3 – CRYPTOGRAPHY (15–17) -->
+<div class="section" id="s3">
+  <div class="section-title">Cryptography <span>Modules 15–17</span></div>
+
+  <div class="checkpoint-score">
+    <span class="checkpoint-score-label">Checkpoint Score</span>
+    <div class="checkpoint-score-bar"><div class="checkpoint-score-fill" id="scoreBar3"></div></div>
+    <span class="checkpoint-score-value" id="scoreVal3">0 / 0</span>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 01</div>
+    <div class="q-text">Which algorithm can ensure data integrity?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">RSA</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">AES</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">MD5</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">PKI</span></label>
+    </div>
+    <div class="explanation">Data integrity is ensured by implementing SHA-2, SHA-3, or MD5 hash algorithms. The MD5 message digest algorithm is still widely in use.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 02</div>
+    <div class="q-text">What is the keyspace of an encryption algorithm?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The set of all possible values used to generate a key</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The set of procedures used to calculate asymmetric keys</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The set of hash functions used to generate a key</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The mathematical equation that is used to create a key</span></label>
+    </div>
+    <div class="explanation">The keyspace of an encryption algorithm is the set of all possible key values. Keys with n bits produce a keyspace with 2ⁿ possible key values.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 03</div>
+    <div class="q-text">Alice and Bob are using a digital signature to sign a document. What key should Alice use to sign the document so that Bob can make sure that the document came from Alice?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Private key from Bob</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Private key from Alice</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Public key from Bob</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Username and password from Alice</span></label>
+    </div>
+    <div class="explanation">Alice uses her private key to encrypt the message digest. The message, encrypted message digest, and public key are used to create the signed document.</div>
+  </div>
+
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 04</div>
+    <div class="q-text">What is another name for confidentiality of information?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Consistency</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Trustworthiness</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Accuracy</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Privacy</span></label>
+    </div>
+    
+    <div class="explanation">Privacy is another name for confidentiality. Accuracy, consistency, and trustworthiness describe data integrity.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 05</div>
+    <div class="q-text">As data is being stored on a local hard disk, which method would secure the data from unauthorized access?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A duplicate hard drive copy</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Deletion of sensitive files</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Two-factor authentication</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Data encryption</span></label>
+    </div>
+    
+    <div class="explanation">Data encryption converts data into a form where only a trusted, authorized person with a secret key or password can decrypt and access the original form.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 06</div>
+    <div class="q-text">What popular encryption algorithm requires that both the sender and receiver know a pre-shared key?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">PKI</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">MD5</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">AES</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">HMAC</span></label>
+    </div>
+    
+    <div class="explanation">AES (Advanced Encryption Standard) is a popular symmetric encryption algorithm where each communicating party needs to know the pre-shared key.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 07</div>
+    <div class="q-text">What technology supports asymmetric key encryption used in IPsec VPNs?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">3DES</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IKE</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SEAL</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">AES</span></label>
+    </div>
+    
+    <div class="explanation">IKE (Internet Key Exchange) is a protocol supporting asymmetric encryption algorithms. It is used to securely exchange encryption keys in IPsec VPN setup.</div>
+  </div>
+
+
+
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 08</div>
+    <div class="q-text">Which statement describes asymmetric encryption algorithms?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">They have key lengths ranging from 80 to 256 bits.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">They include DES, 3DES, and AES.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">They are also called shared-secret key algorithms.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">They are relatively slow because they are based on difficult computational algorithms.</span></label>
+    </div>
+    
+    <div class="explanation">DES, 3DES, and AES are symmetric algorithms. Asymmetric algorithms are relatively slow because they are based on difficult computational algorithms.</div>
+  </div>
+
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 09</div>
+    <div class="q-text">Two users must authenticate each other using digital certificates and a CA. Which option describes the CA authentication procedure?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The users must obtain the certificate of the CA and then their own certificate.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The CA is always required, even after user verification is complete.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">CA certificates are retrieved out-of-band using the PSTN, and the authentication is done in-band over a network.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">After user verification is complete, the CA is no longer required, even if one of the involved certificates expires.</span></label>
+    </div>
+    
+    <div class="explanation">Both users must obtain their own digital certificate from a CA. They submit a request, CA performs technical verification (out-of-band), and the user retrieves the certificate in-band.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 10</div>
+    <div class="q-text">The message "fghgpf vjg ecuvng" was encrypted using a Caesar cipher with a key of 2. What is the plaintext message?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">invade the castle</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">defend the castle</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">defend the region</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">invade the region</span></label>
+    </div>
+    
+    <div class="explanation">With key = 2, each letter is shifted back 2 places: f=d, g=e, h=f, p=n, v=t, j=h, e=c, c=a, u=s, n=l → "defend the castle".</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 11</div>
+    <div class="q-text">In a hierarchical CA topology, where can a subordinate CA obtain a certificate for itself?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">From the root CA or another subordinate CA at a higher level</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">From the root CA or another subordinate CA at the same level</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">From the root CA or from self-generation</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">From the root CA only</span></label>
+    </div>
+    
+    <div class="explanation">In a hierarchical CA topology, a subordinate CA can obtain its certificate from the root CA or another subordinate CA at a higher level. Only the root CA can issue a self-signing certificate.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 12</div>
+    <div class="q-text">What is the purpose for using digital signatures for code signing?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To establish an encrypted connection to exchange confidential data with a vendor website</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To verify the integrity of executable files downloaded from a vendor website</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To authenticate the identity of the system with a vendor website</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To generate a virtual ID</span></label>
+    </div>
+    
+    <div class="explanation">Code signing is used to verify the integrity of executable files downloaded from a vendor website using digital certificates.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 13</div>
+    <div class="q-text">What technology has a function of using trusted third-party protocols to issue credentials that are accepted as an authoritative identity?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Digital signatures</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Hashing algorithms</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">PKI certificates</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Symmetric keys</span></label>
+    </div>
+    
+    <div class="explanation">A PKI Certificate Authority is a trusted third-party entity that issues PKI certificates, providing authenticity, confidentiality, integrity, and nonrepudiation services.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 14</div>
+    <div class="q-text">Which requirement of secure communications is ensured by the implementation of MD5 or SHA hash generating algorithms?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Nonrepudiation</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Authentication</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Integrity</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Confidentiality</span></label>
+    </div>
+    
+    <div class="explanation">Integrity is ensured by implementing MD5 or SHA hash algorithms. Authentication uses HMAC protocols. Confidentiality uses DES, 3DES, AES, RSA, or PKI.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 15</div>
+    <div class="q-text">What is an example of the one-time pad cipher?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">RC4</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Rail fence</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Caesar</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Vigenère</span></label>
+    </div>
+    
+    <div class="explanation">RC4 is an example of the one-time pad cipher widely used on the Internet. Caesar is a substitution cipher; Vigenère is based on Caesar; rail fence is a transposition cipher.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 16</div>
+    <div class="q-text">A company is developing a security policy. A hash value should only be recalculated with a predetermined code, thus ensuring the validity of data source. Which aspect of secure communications is addressed?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Data integrity</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Non-repudiation</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Data confidentiality</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Origin authentication</span></label>
+    </div>
+    
+    <div class="explanation">Origin authentication guarantees that the message is not a forgery and does actually come from who it states it comes from.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 17</div>
+    <div class="q-text">What is the purpose of a digital certificate?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It guarantees that a website has not been hacked.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It provides proof that data has a traditional signature attached.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It ensures that the person gaining access to a network device is authorized.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It authenticates a website and establishes a secure connection to exchange confidential data.</span></label>
+    </div>
+    <div class="explanation">Digital signatures commonly use digital certificates to verify the identity of the originator, authenticate a vendor website, and establish an encrypted connection to exchange confidential data.</div>
+  </div>
+
+  <div class="checkpoint-footer">
+    <button class="btn btn-submit" onclick="submitCheckpoint(this)">Submit Checkpoint</button>
+    <button class="btn btn-reset-checkpoint" onclick="resetCheckpoint(this)">Reset Checkpoint</button>
+  </div>
+</div>
+
+<!-- SECTION 4 – VPNs (18–19) -->
+<div class="section" id="s4">
+  <div class="section-title">VPNs <span>Modules 18–19</span></div>
+
+  <div class="checkpoint-score">
+    <span class="checkpoint-score-label">Checkpoint Score</span>
+    <div class="checkpoint-score-bar"><div class="checkpoint-score-fill" id="scoreBar4"></div></div>
+    <span class="checkpoint-score-value" id="scoreVal4">0 / 0</span>
+  </div>
+
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 01</div>
+    <div class="q-text">What technology is used to negotiate security associations and calculate shared keys for an IPsec VPN tunnel?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">PSK</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SHA</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">3DES</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IKE</span></label>
+    </div>
+    
+    <div class="explanation">IKE (Internet Key Exchange) negotiates security associations (SAs) and calculates shared keys for IPsec VPN tunnels.</div>
+  </div>
+
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 02</div>
+    <div class="q-text">What takes place during IKE Phase 2 when establishing an IPsec VPN?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Traffic is exchanged between IPsec peers.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec security associations are exchanged.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ISAKMP security associations are exchanged.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Interesting traffic is identified.</span></label>
+    </div>
+    
+    <div class="explanation">During IKE Phase 2, IPsec peers exchange the IPsec security associations (SAs) that each peer is willing to use to establish the IPsec tunnel.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 03</div>
+    <div class="q-text">When the CLI is used to configure an ISR for a site-to-site VPN connection, what is the purpose of the <em>crypto map</em> command in interface configuration mode?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To configure the transform set</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To bind the interface to the ISAKMP policy</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To force IKE Phase 1 negotiations to begin</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To negotiate the SA policy</span></label>
+    </div>
+    
+    <div class="explanation">The crypto map command, along with the policy name, is used to bind the interface to the ISAKMP policy created previously.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 04</div>
+    <div class="q-text">Router R1 has configured ISAKMP policies numbered 1, 5, 9, and 203. Router R2 only has default policies. How will R1 attempt to negotiate the IKE Phase 1 ISAKMP tunnel with R2?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">R1 and R2 cannot match policies because the policy numbers are different.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">R1 will attempt to match policy #1 with the most secure matching policy on R2.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">R1 will try to match policy #203 with the most secure default policy on R2.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">R1 will begin to try to match policy #1 with policy #65514 on R2.</span></label>
+    </div>
+    
+    <div class="explanation">Peers attempt to negotiate using the policy with the lowest number (highest priority). Peers do not require matching priority numbers.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 05</div>
+    <div class="q-text">Which statement describes the effect of key length in deterring an attacker from hacking through an encryption key?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The length of a key does not affect the degree of security.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The shorter the key, the harder it is to break.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The length of a key will not vary between encryption algorithms.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The longer the key, the more key possibilities exist.</span></label>
+    </div>
+    
+    <div class="explanation">The longer the key, the harder it is to break. A 64-bit key may take 1 year; a 128-bit key may take 10¹⁹ years to decrypt with a sophisticated computer.</div>
+  </div>
+
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 06</div>
+    <div class="q-text">Which protocol creates a virtual point-to-point connection to tunnel unencrypted traffic between Cisco routers from a variety of protocols?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IKE</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">OSPF</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">GRE</span></label>
+    </div>
+    
+    <div class="explanation">GRE (Generic Routing Encapsulation) encapsulates multiprotocol traffic between Cisco routers. GRE does not encrypt data.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 07</div>
+    <div class="q-text">How is "tunneling" accomplished in a VPN?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">New headers from one or more VPN protocols encapsulate the original packets.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">All packets between two hosts are assigned to a single physical medium.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Packets are disguised to look like other types of traffic.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A dedicated circuit is established between the source and destination devices.</span></label>
+    </div>
+    
+    <div class="explanation">Tunneling encapsulates packets with headers from one or more VPN protocols before they are sent across the third party network.</div>
+  </div>
+
+
+  <div class="q-card" data-type="single" data-correct="4">
+    <div class="q-num">QUESTION 08</div>
+    <div class="q-text">Which statement accurately describes a characteristic of IPsec?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec works at the application layer and protects all application data.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec is a framework of standards developed by Cisco that relies on OSI algorithms.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec is a framework of proprietary standards that depend on Cisco specific algorithms.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec works at the transport layer and protects data at the network layer.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec is a framework of open standards that relies on existing algorithms.</span></label>
+    </div>
+    
+    <div class="explanation">IPsec is a framework of open standards that relies on existing algorithms for confidentiality, integrity, authentication, and secure key exchange.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 09</div>
+    <div class="q-text">Which is a requirement of a site-to-site VPN?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It requires hosts to use VPN client software to encapsulate traffic.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It requires the placement of a VPN server at the edge of the company network.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It requires a VPN gateway at each end of the tunnel to encrypt and decrypt traffic.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It requires a client/server architecture.</span></label>
+    </div>
+    
+    <div class="explanation">Site-to-site VPNs are static and require a VPN gateway at each end to encapsulate and decapsulate traffic. Hosts have no knowledge of the VPN.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 10</div>
+    <div class="q-text">Consider the following configuration on a Cisco ASA: <em>crypto ipsec transform-set ESP-DES-SHA esp-des esp-sha-hmac</em>. What is the purpose of this command?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To define the ISAKMP parameters that are used to establish the tunnel</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To define the encryption and integrity algorithms that are used to build the IPsec tunnel</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To define what traffic is allowed through and protected by the tunnel</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To define only the allowed encryption algorithms</span></label>
+    </div>
+    
+    <div class="explanation">The transform set defines what encryption and authentication schemes can be used, negotiated during Phase 2 of the IPsec VPN connection process.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 11</div>
+    <div class="q-text">What is needed to define interesting traffic in the creation of an IPsec tunnel?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Security associations</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Hashing algorithm</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Access list</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Transform set</span></label>
+    </div>
+    
+    <div class="explanation">An access list with a permit statement identifies interesting traffic. Once matched, tunnel security associations can be negotiated.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 12</div>
+    <div class="q-text">What is a function of the GRE protocol?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To configure the set of encryption and hashing algorithms for data through the IPsec tunnel</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To encapsulate multiple OSI Layer 3 protocol packet types inside an IP tunnel</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To configure the IPsec tunnel lifetime</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To provide encryption through the IPsec tunnel</span></label>
+    </div>
+    
+    <div class="explanation">GRE supports multiprotocol tunneling and can encapsulate multiple OSI Layer 3 protocol packet types inside an IP tunnel. GRE does not provide encryption.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 13</div>
+    <div class="q-text">Two corporations have just completed a merger. The network engineer has been asked to connect the two corporate networks without the expense of leased lines. Which solution would be the most cost effective method of providing a proper and secure connection between the two corporate networks?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Cisco AnyConnect Secure Mobility Client with SSL</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Cisco Secure Mobility Clientless SSL VPN</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Site-to-site VPN</span></option>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Remote access VPN using IPsec</span></label>
+    </div>
+    <div class="explanation">Site-to-site VPN is an extension of a classic WAN network that provides a static interconnection of entire networks — the most cost-effective method for connecting two corporate networks.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 14</div>
+    <div class="q-text">What type of traffic is supported by IPsec?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec supports all IPv4 traffic.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec supports layer 2 multicast traffic.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec supports all traffic permitted through an ACL.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec only supports unicast traffic.</span></label>
+    </div>
+    <div class="explanation">IPsec only supports unicast traffic. If multicast traffic needs to travel through a tunnel, a GRE tunnel must be configured between the peers.</div>
+  </div>
+
+  <div class="checkpoint-footer">
+    <button class="btn btn-submit" onclick="submitCheckpoint(this)">Submit Checkpoint</button>
+    <button class="btn btn-reset-checkpoint" onclick="resetCheckpoint(this)">Reset Checkpoint</button>
+    <button class="btn btn-show-answers" onclick="showAnswers(this)">Show Answers</button>
+  </div>
+</div>
+
+<!-- SECTION 5 – ASA (20–22) -->
+<div class="section" id="s5">
+  <div class="section-title">ASA <span>Modules 20–22</span></div>
+
+  <div class="checkpoint-score">
+    <span class="checkpoint-score-label">Checkpoint Score</span>
+    <div class="checkpoint-score-bar"><div class="checkpoint-score-fill" id="scoreBar5"></div></div>
+    <span class="checkpoint-score-value" id="scoreVal5">0 / 0</span>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 01</div>
+    <div class="q-text">A network analyst wants to monitor the activity of all new interns. Which type of security testing would track when the interns sign on and sign off the network?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Integrity checker</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Vulnerability scanning</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Password cracking</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Network scanning</span></label>
+    </div>
+    
+    <div class="explanation">An integrity checking system can report login and logout activities. Network scanning detects user names, groups, and shared resources by scanning TCP ports.</div>
+  </div>
+
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 02</div>
+    <div class="q-text">What testing tool is available for network administrators who need a GUI version of Nmap?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SuperScan</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SIEM</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Nessus</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Zenmap</span></label>
+    </div>
+    
+    <div class="explanation">Zenmap is the GUI version of Nmap. Nessus scans for software vulnerabilities. SuperScan is a Microsoft port scanning tool. SIEM is used for real-time security event reporting.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 03</div>
+    <div class="q-text">What is the goal of network penetration testing?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Determining the feasibility and the potential consequences of a successful attack</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Detecting potential weaknesses in systems</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Detecting configuration changes on network systems</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Detecting weak passwords</span></label>
+    </div>
+    
+    <div class="explanation">Penetration testing determines the possible consequences of successful attacks on the network. Vulnerability scanning detects weaknesses. Password cracking detects weak passwords.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 04</div>
+    <div class="q-text">How does network scanning help assess operations security?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It can detect open TCP ports on network systems.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It can detect weak or blank passwords.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It can simulate attacks from malicious sources.</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It can log abnormal activity.</span></label>
+    </div>
+    
+    <div class="explanation">Network scanning helps identify open TCP and UDP ports that could be targets of an attack, strengthening network security.</div>
+  </div>
+
+
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 05</div>
+    <div class="q-text">What can be configured as part of a network object?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Interface type</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IP address and mask</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Upper layer protocol</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Source and destination MAC address</span></label>
+    </div>
+    
+    <div class="explanation">Network objects can be configured with an IP address and mask. Service objects can be configured with a protocol or port ranges.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 06</div>
+    <div class="q-text">What is the function of a policy map configuration when an ASA firewall is being configured?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Binding a service policy to an interface</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Binding class maps with actions</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Identifying interesting traffic</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Using ACLs to match traffic</span></label>
+    </div>
+    
+    <div class="explanation">Policy maps bind class maps with actions. Class maps identify Layer 3/4 traffic. Service policies attach the policy map to an interface.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 07</div>
+    <div class="q-text">What is the purpose of configuring an IP address on an ASA device in transparent mode?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Management</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Routing</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">NAT</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">VPN connectivity</span></label>
+    </div>
+    
+    <div class="explanation">An ASA in transparent mode functions like a Layer 2 device and does not support dynamic routing protocols, VPNs, QoS, or DHCP. The IP address is used for management.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="1">
+    <div class="q-num">QUESTION 08</div>
+    <div class="q-text">Which license provides up to 50 IPsec VPN users on an ASA 5506-X device?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The most commonly pre-installed Base license</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A purchased Security Plus upgrade license</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A purchased Base license</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A purchased AnyConnect Premium license</span></label>
+    </div>
+    
+    <div class="explanation">The Security Plus upgrade license supports a higher connection capacity and up to 50 IPsec VPN users on the ASA 5506-X.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 09</div>
+    <div class="q-text">What mechanism is used by an ASA device to allow inspected outbound traffic to return to the originating sender who is on an inside network?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Access control lists</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Network Address Translation</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Security zones</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Stateful packet inspection</span></label>
+    </div>
+    
+    <div class="explanation">Stateful packet inspection allows return traffic sourced on the outside network to be received by the originating sender on the internal network.</div>
+  </div>
+
+
+  <div class="q-card" data-type="single" data-correct="3">
+    <div class="q-num">QUESTION 10</div>
+    <div class="q-text">What interface configuration command is used on an ASA to request an IP address from an upstream DSL device?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ip address ip-address netmask</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ip address dhcp setroute</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">dhcpd address IP_address1 [ -IP_address2 ] if_name</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ip address pppoe</span></label>
+    </div>
+    
+    <div class="explanation">PPPoE is used when connecting to an upstream DSL device. The <em>ip address pppoe</em> command is used for point-to-point connectivity over Ethernet services.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="2">
+    <div class="q-num">QUESTION 11</div>
+    <div class="q-text">What is the purpose of the Tripwire network testing tool?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To perform vulnerability scanning</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To provide information about vulnerabilities and aid in penetration testing and IDS signature development</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To assess configuration against established policies, recommended best practices, and compliance standards</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To detect unauthorized wired network access</span></label>
+    </div>
+    <div class="explanation">Tripwire assesses configuration against established policies, recommended best practices, and compliance standards.</div>
+  </div>
+
+  <div class="q-card" data-type="single" data-correct="0">
+    <div class="q-num">QUESTION 12</div>
+    <div class="q-text">A network analyst is testing the security of the systems and networks of a corporation. What tool could be used to audit and recover passwords?</div>
+    <div class="options">
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">L0phtCrack</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SuperScan</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Nessus</span></label>
+      <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Metasploit</span></label>
+    </div>
+    <div class="explanation">L0phtCrack is a password auditing and recovery application. SuperScan detects open ports. Nessus scans vulnerabilities. Metasploit aids penetration testing.</div>
+  </div>
+
+  <div class="checkpoint-footer">
+    <button class="btn btn-submit" onclick="submitCheckpoint(this)">Submit Checkpoint</button>
+    <button class="btn btn-reset-checkpoint" onclick="resetCheckpoint(this)">Reset Checkpoint</button>
+  </div>
+
+</div>
+
+</main>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    updateScore();
+  });
+});
+
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    const card = opt.closest('.q-card');
+    const type = card.dataset.type;
+    if (card.classList.contains('checked')) return;
+    if (type === 'single') {
+      card.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    } else {
+      opt.classList.toggle('selected');
+    }
+  });
+});
+
+function checkQ(btn) {
+  const card = btn.closest('.q-card');
+  if (card.classList.contains('checked')) return;
+  card.classList.add('checked');
+  const correctIdxs = card.dataset.correct.split(',').map(Number);
+  const opts = card.querySelectorAll('.option');
+  opts.forEach((opt, idx) => {
+    const isCorrect = correctIdxs.includes(idx);
+    const isSelected = opt.classList.contains('selected');
+    if (isCorrect) opt.classList.add('correct');
+    else if (isSelected && !isCorrect) opt.classList.add('wrong');
+  });
+  card.querySelector('.explanation').classList.add('visible');
+  btn.disabled = true;
+  updateScore();
+}
+
+function resetQ(btn) {
+  const card = btn.closest('.q-card');
+  card.classList.remove('checked');
+  card.querySelectorAll('.option').forEach(o => {
+    o.classList.remove('selected','correct','wrong');
+  });
+  card.querySelector('.explanation').classList.remove('visible');
+  card.querySelector('.btn-check').disabled = false;
+  updateScore();
+}
+
+function updateScore() {
+  const checked = document.querySelectorAll('.q-card.checked');
+  let correct = 0;
+  checked.forEach(card => {
+    const correctIdxs = card.dataset.correct.split(',').map(Number);
+    const opts = card.querySelectorAll('.option');
+    const selectedIdxs = [];
+    opts.forEach((o, i) => { if (o.classList.contains('selected')) selectedIdxs.push(i); });
+    const match = correctIdxs.length === selectedIdxs.length &&
+      correctIdxs.every(i => selectedIdxs.includes(i));
+    if (match) correct++;
+  });
+  document.getElementById('scoreVal').textContent = `${correct} / ${checked.length} checked`;
+  document.getElementById('progressFill').style.width = checked.length > 0 ? `${(correct/checked.length)*100}%` : '0%';
+}
+
+function submitCheckpoint(btn) {
+  const section = btn.closest('.section');
+  const sectionId = section.id;
+  const sectionNum = sectionId.replace('s', '');
+  
+  const cards = section.querySelectorAll('.q-card:not(.checked)');
+  cards.forEach(card => {
+    card.classList.add('checked');
+    
+    // Check if question was answered
+    const opts = card.querySelectorAll('.option');
+    const selectedIdxs = [];
+    opts.forEach((o, i) => { if (o.classList.contains('selected')) selectedIdxs.push(i); });
+    
+    // If no answer selected, mark as unanswered
+    if (selectedIdxs.length === 0) {
+      card.classList.add('unanswered');
+    }
+    
+    const correctIdxs = card.dataset.correct.split(',').map(Number);
+    opts.forEach((opt, idx) => {
+      const isCorrect = correctIdxs.includes(idx);
+      const isSelected = opt.classList.contains('selected');
+      if (isCorrect) opt.classList.add('correct');
+      else if (isSelected && !isCorrect) opt.classList.add('wrong');
+    });
+    card.querySelector('.explanation').classList.add('visible');
+  });
+  
+  // Calculate checkpoint score
+  const allCards = section.querySelectorAll('.q-card');
+  let correct = 0;
+  allCards.forEach(card => {
+    const correctIdxs = card.dataset.correct.split(',').map(Number);
+    const opts = card.querySelectorAll('.option');
+    const selectedIdxs = [];
+    opts.forEach((o, i) => { if (o.classList.contains('selected')) selectedIdxs.push(i); });
+    const match = correctIdxs.length === selectedIdxs.length &&
+      correctIdxs.every(i => selectedIdxs.includes(i));
+    if (match) correct++;
+  });
+  
+  const total = allCards.length;
+  document.getElementById('scoreVal' + sectionNum).textContent = `${correct} / ${total}`;
+  document.getElementById('scoreBar' + sectionNum).style.width = total > 0 ? `${(correct/total)*100}%` : '0%';
+  updateScore();
+}
+
+function resetCheckpoint(btn) {
+  const section = btn.closest('.section');
+  const cards = section.querySelectorAll('.q-card');
+  cards.forEach(card => {
+    card.classList.remove('checked', 'unanswered');
+    card.querySelectorAll('.option').forEach(o => {
+      o.classList.remove('selected','correct','wrong');
+    });
+    card.querySelector('.explanation').classList.remove('visible');
+  });
+  updateScore();
+}
+</script>
+</body>
+</html>
+
