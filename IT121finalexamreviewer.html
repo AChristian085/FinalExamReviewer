@@ -118,6 +118,45 @@
   }
   .section-title span { color: var(--muted); font-weight: 400; }
 
+  .checkpoint-score {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+  }
+  .checkpoint-score-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .checkpoint-score-value {
+    font-size: 18px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .checkpoint-score-bar {
+    flex: 1;
+    max-width: 200px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 100px;
+    margin: 0 16px;
+    overflow: hidden;
+  }
+  .checkpoint-score-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 100px;
+    transition: width .4s ease;
+    width: 0%;
+  }
+
   .q-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -225,7 +264,7 @@
   .explanation.visible { display: block; }
   .explanation strong { color: var(--accent); font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: 6px; }
 
-  .q-footer { display: flex; gap: 10px; margin-top: 16px; }
+  .q-card.unanswered { border-color: var(--wrong) !important; background: rgba(239,68,68,.08) !important; }
   .btn {
     font-family: var(--mono);
     font-size: 11px;
@@ -250,33 +289,23 @@
   }
   .btn-reset:hover { color: var(--text); border-color: #3a4462; }
 
-  .score-bar {
-    position: sticky; top: 0; z-index: 10;
-    background: rgba(13,15,20,.9);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
-    padding: 10px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-    font-family: var(--mono);
-    font-size: 12px;
+  .checkpoint-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
   }
-  .score-label { color: var(--muted); }
-  .score-val { color: var(--accent); font-size: 14px; }
-  .progress-wrap {
-    flex: 1; max-width: 200px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 100px;
-    margin: 0 16px;
-    overflow: hidden;
+  .btn-submit {
+    background: var(--accent);
+    color: #0d0f14;
   }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent2), var(--accent));
-    border-radius: 100px;
-    transition: width .4s ease;
-    width: 0%;
+  .btn-submit:hover { background: #6aadff; }
+  .btn-reset-checkpoint {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
   }
+  .btn-reset-checkpoint:hover { color: var(--text); border-color: #3a4462; }
 
   @media (max-width: 600px) {
     main { padding: 20px 14px 60px; }
@@ -292,12 +321,6 @@
   <p>Modules 11–12 · 13–14 · 15–17 · 18–19 · 20–22</p>
 </header>
 
-<div class="score-bar">
-  <span class="score-label">Score</span>
-  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
-  <span class="score-val" id="scoreVal">0 / 0</span>
-</div>
-
 <div class="tabs-bar" id="tabsBar">
   <button class="tab-btn active" data-tab="s1">🛡️ Intrusion Prevention</button>
   <button class="tab-btn" data-tab="s2">🔌 Layer 2 &amp; Endpoint</button>
@@ -312,6 +335,12 @@
 <div class="section active" id="s1">
   <div class="section-title">Intrusion Prevention <span>Modules 11–12</span></div>
 
+  <div class="checkpoint-score">
+    <span class="checkpoint-score-label">Checkpoint Score</span>
+    <div class="checkpoint-score-bar"><div class="checkpoint-score-fill" id="scoreBar1"></div></div>
+    <span class="checkpoint-score-value" id="scoreVal1">0 / 0</span>
+  </div>
+
 
 
   <div class="q-card" data-type="single" data-correct="2">
@@ -323,7 +352,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It can stop trigger packets.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It has no impact on network latency.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">An IPS can stop trigger packets. However, because they are installed inline they add some latency and jitter to the traffic. IDS sensors are passive and cannot stop trigger packets.</div>
   </div>
 
@@ -336,7 +364,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It is installed inline with the network traffic flow.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It can be configured to drop trigger packets that are associated with a connection.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">An IDS often requires assistance from other networking devices, such as routers and firewalls, to respond to an attack.</div>
   </div>
 
@@ -351,7 +378,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Snort</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Netflow</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Snort is an open source IPS capable of real-time traffic and port analysis, packet logging, content searching/matching, and detecting probes, attacks, port scans, fingerprinting, and buffer overflow attacks.</div>
   </div>
 
@@ -364,7 +390,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Snort rule set push</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Snort rule set updates</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">The Snort rule set pull feature allows a router to download rule sets directly from cisco.com or snort.org using one-time commands or periodic automated updates.</div>
   </div>
 
@@ -377,7 +402,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ISR 2900 or higher</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">K9 license</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Requirements to run Snort IPS: ISR 4300 or higher, K9 license, 8 GB RAM, and 8 GB flash.</div>
   </div>
 
@@ -390,7 +414,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A virtual service container that runs on the Cisco ISR router operating system</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A rule management application that can be used to automatically download Snort rule updates</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">PulledPork is a rule management application for automatically downloading Snort rule updates. It requires an authorization code (oinkcode) from a snort.org account.</div>
   </div>
 
@@ -404,7 +427,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Pattern-based detection</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Anomaly-based detection</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Honey pot-based detection uses a decoy server to attract and divert attacks away from production devices, giving administrators time to analyze incoming attacks.</div>
   </div>
 
@@ -417,7 +439,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A known attack that is not detected</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Normal traffic that is correctly being ignored and forwarded</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">True negative: benign normal traffic is correctly being ignored and forwarded without generating an alert.</div>
   </div>
 
@@ -430,7 +451,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Keeps Snort current with the latest threat protection and term-based subscriptions</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Keeps track of the health of the Snort engine running in the service container</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">The Snort IPS fail open and close functionality can be configured to block traffic flow or bypass IPS checking in the event of an IPS engine failure.</div>
   </div>
 
@@ -443,7 +463,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It is fully supported by Cisco</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It is available for free</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Community Rule Set is available for free, provides limited coverage, with 30-day delayed signature access and no Cisco support. Subscriber Rule Set is paid and uses Cisco Talos research.</div>
   </div>
 
@@ -456,7 +475,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It provides the lowest level of protection</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It enables the highest number of signatures to be verified</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Connectivity is the least secure option. Balanced is the mid-range option. Security is the most secure option.</div>
   </div>
 
@@ -469,7 +487,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A list of atomic and composite signatures</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A set of rules for an IDS or IPS to detect intrusion activity</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">An OVA (Open Virtualization Archive) file contains a compressed, installable version of a virtual machine.</div>
   </div>
 
@@ -482,7 +499,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A feature supported on Cisco switches that enables the switch to copy frames and forward them to an analysis device</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A passive device that forwards all traffic and physical layer errors to an analysis device</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">A network tap is a passive splitting device implemented inline on the network that forwards all traffic, including physical layer errors, to an analysis device.</div>
   </div>
 
@@ -495,7 +511,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It supports the SNMP trap operation on a switch.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It copies the traffic from one switch port and sends it to another switch port that is connected to a monitoring device.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">SPAN (Switched Port Analyzer) mirrors traffic from one port to another port on the same switch where a network analyzer is connected.</div>
   </div>
 
@@ -508,7 +523,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">True negative</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">True positive</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">A false positive is when an alert is generated for benign activity — normal traffic that should not trigger an alarm but does.</div>
   </div>
 
@@ -521,7 +535,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">HIPS monitors network processes and protects critical files.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">HIPS protects critical system resources and monitors operating system processes.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">HIPS monitors and protects OS and critical system processes specific to that host. It can be thought of as a combination of antivirus, antimalware, and a firewall.</div>
   </div>
 
@@ -534,14 +547,24 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The attacking period used by the attacker</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The network bandwidth consumed by all packets</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">A composite (stateful) signature identifies a sequence of operations across multiple hosts over time. The IPS sensor must maintain state information for the specific attack.</div>
+  </div>
+
+  <div class="checkpoint-footer">
+    <button class="btn btn-submit" onclick="submitCheckpoint(this)">Submit Checkpoint</button>
+    <button class="btn btn-reset-checkpoint" onclick="resetCheckpoint(this)">Reset Checkpoint</button>
   </div>
 </div>
 
 <!-- SECTION 2 – LAYER 2 & ENDPOINT (13–14) -->
 <div class="section" id="s2">
   <div class="section-title">Layer 2 &amp; Endpoint Security <span>Modules 13–14</span></div>
+
+  <div class="checkpoint-score">
+    <span class="checkpoint-score-label">Checkpoint Score</span>
+    <div class="checkpoint-score-bar"><div class="checkpoint-score-fill" id="scoreBar2"></div></div>
+    <span class="checkpoint-score-value" id="scoreVal2">0 / 0</span>
+  </div>
 
   <div class="q-card" data-type="single" data-correct="3">
     <div class="q-num">QUESTION 01</div>
@@ -552,7 +575,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">These devices connect to the corporate network through public wireless networks.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">These devices are more varied in type and are portable.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Traditional security is not suited for new network devices that are mobile, frequently access cloud storage, and may be personal devices.</div>
   </div>
 
@@ -567,7 +589,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Switch</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">End-user station</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">In 802.1x, a supplicant is the end-user device (such as a laptop) attempting to attach to the WLAN.</div>
   </div>
 
@@ -580,7 +601,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Unauthorized</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Forwarding</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">When a port is configured for 802.1X, the port starts in the unauthorized state and stays that way until the client has successfully authenticated.</div>
   </div>
 
@@ -594,7 +614,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">aaa new-model</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">dot1x pae authenticator</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">The <em>aaa authentication dot1x default group radius</em> command specifies RADIUS as the method for 802.1X port-based authentication.</div>
   </div>
 
@@ -607,7 +626,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A rogue DHCP server provides false IP configuration parameters to legitimate DHCP clients.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A legitimate network IP address is hijacked by a rogue node.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">In an IP address spoofing attack, the IP address of a legitimate network host is hijacked and used by a rogue node to pose as a valid node on the network.</div>
   </div>
 
@@ -620,7 +638,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Layer 3</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Layer 4</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">STP is a Layer 2 technology for preventing Layer 2 loops between redundant switch paths.</div>
   </div>
 
@@ -633,7 +650,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">All point-to-point links between switches</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">All BPDU Guard enabled ports</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">The spanning-tree loopguard default command enables Loop Guard on all point-to-point links.</div>
   </div>
 
@@ -646,7 +662,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Enable DAI on the management VLAN.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Enable port security globally.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">To mitigate ARP spoofing: enable DHCP snooping globally and on selected VLANs, enable DAI on selected VLANs, and configure trusted interfaces for DHCP snooping and ARP inspection.</div>
   </div>
 
@@ -660,7 +675,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SSH</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SCP</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">SSH encrypts data communications between two network devices. Telnet uses plain text and credentials can be captured if traffic is intercepted.</div>
   </div>
 
@@ -673,7 +687,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">By the application of the ip verify source command to untrusted ports</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">By implementing DHCP snooping on trusted ports</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">DHCP spoofing attacks can be mitigated by using DHCP snooping on trusted ports.</div>
   </div>
 
@@ -686,7 +699,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The switch will forward all received frames to all other ports.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The switch will shut down.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">When the CAM table is full, no new MAC addresses can be added and the switch forwards all received frames to all other ports, allowing an attacker to capture all flooded traffic.</div>
   </div>
 
@@ -699,7 +711,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">802.1x</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SSH</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">802.1x is an IEEE standard that defines port-based access control, providing protection from unauthorized clients by authenticating each client attempting to connect to the LAN.</div>
   </div>
 
@@ -712,7 +723,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The client that is requesting authentication</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The switch controlling network access</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">The supplicant is the client requesting network access; the authenticator is the switch controlling physical access; the authentication server performs actual authentication.</div>
   </div>
 
@@ -725,7 +735,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Authenticator</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Authentication server</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">The switch acts as the authenticator — it controls physical access to the network based on the authentication status of the client.</div>
   </div>
 
@@ -738,7 +747,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Messages stored on a client device</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Messages stored on the email server</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Cisco ESAs control outbound messages through DLP to ensure outbound messages comply with industry standards and are protected in transit.</div>
   </div>
 
@@ -751,7 +759,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To provide anti-malware scanning at the network perimeter for both authenticated and non-authenticated devices</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To provide protection against a wide variety of web-based threats including adware and phishing attacks</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">NAC ensures wired and wireless endpoints that want to gain access to the network adhere to the requirements defined by the security policy.</div>
   </div>
 
@@ -764,7 +771,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IP Source Guard</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Dynamic ARP Inspection</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">IP Source Guard (IPSG) prevents MAC and IP address spoofing. DAI prevents ARP spoofing. DHCP Snooping prevents DHCP starvation. Port Security prevents MAC table overflow attacks.</div>
   </div>
 
@@ -777,7 +783,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ARP poisoning</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ARP spoofing</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">VLAN hopping attacks can be mitigated by disabling DTP and setting the native VLAN of trunk links to VLANs not in use.</div>
   </div>
 
@@ -790,7 +795,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The attacker provides incorrect DNS and default gateway information to clients.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The IP addresses assigned to legitimate clients are hijacked.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">DHCP starvation attacks send many DHCPDISCOVER messages to lease the entire pool of available IP addresses, denying them to legitimate hosts (DoS).</div>
   </div>
 
@@ -803,14 +807,24 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To check the destination MAC in the Ethernet header against the target MAC address in the ARP body</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To check the destination MAC in the Ethernet header against the source MAC in the ARP body</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Destination MAC validation checks the destination MAC in the Ethernet header against the target MAC address in the ARP body.</div>
+  </div>
+
+  <div class="checkpoint-footer">
+    <button class="btn btn-submit" onclick="submitCheckpoint(this)">Submit Checkpoint</button>
+    <button class="btn btn-reset-checkpoint" onclick="resetCheckpoint(this)">Reset Checkpoint</button>
   </div>
 </div>
 
 <!-- SECTION 3 – CRYPTOGRAPHY (15–17) -->
 <div class="section" id="s3">
   <div class="section-title">Cryptography <span>Modules 15–17</span></div>
+
+  <div class="checkpoint-score">
+    <span class="checkpoint-score-label">Checkpoint Score</span>
+    <div class="checkpoint-score-bar"><div class="checkpoint-score-fill" id="scoreBar3"></div></div>
+    <span class="checkpoint-score-value" id="scoreVal3">0 / 0</span>
+  </div>
 
   <div class="q-card" data-type="single" data-correct="2">
     <div class="q-num">QUESTION 01</div>
@@ -821,7 +835,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">MD5</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">PKI</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Data integrity is ensured by implementing SHA-2, SHA-3, or MD5 hash algorithms. The MD5 message digest algorithm is still widely in use.</div>
   </div>
 
@@ -834,7 +847,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The set of hash functions used to generate a key</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The mathematical equation that is used to create a key</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">The keyspace of an encryption algorithm is the set of all possible key values. Keys with n bits produce a keyspace with 2ⁿ possible key values.</div>
   </div>
 
@@ -847,7 +859,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Public key from Bob</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Username and password from Alice</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Alice uses her private key to encrypt the message digest. The message, encrypted message digest, and public key are used to create the signed document.</div>
   </div>
 
@@ -861,7 +872,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Accuracy</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Privacy</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Privacy is another name for confidentiality. Accuracy, consistency, and trustworthiness describe data integrity.</div>
   </div>
 
@@ -874,7 +885,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Two-factor authentication</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Data encryption</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Data encryption converts data into a form where only a trusted, authorized person with a secret key or password can decrypt and access the original form.</div>
   </div>
 
@@ -887,7 +898,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">AES</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">HMAC</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">AES (Advanced Encryption Standard) is a popular symmetric encryption algorithm where each communicating party needs to know the pre-shared key.</div>
   </div>
 
@@ -900,7 +911,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">SEAL</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">AES</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">IKE (Internet Key Exchange) is a protocol supporting asymmetric encryption algorithms. It is used to securely exchange encryption keys in IPsec VPN setup.</div>
   </div>
 
@@ -916,7 +927,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">They are also called shared-secret key algorithms.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">They are relatively slow because they are based on difficult computational algorithms.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">DES, 3DES, and AES are symmetric algorithms. Asymmetric algorithms are relatively slow because they are based on difficult computational algorithms.</div>
   </div>
 
@@ -930,7 +941,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">CA certificates are retrieved out-of-band using the PSTN, and the authentication is done in-band over a network.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">After user verification is complete, the CA is no longer required, even if one of the involved certificates expires.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Both users must obtain their own digital certificate from a CA. They submit a request, CA performs technical verification (out-of-band), and the user retrieves the certificate in-band.</div>
   </div>
 
@@ -943,7 +954,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">defend the region</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">invade the region</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">With key = 2, each letter is shifted back 2 places: f=d, g=e, h=f, p=n, v=t, j=h, e=c, c=a, u=s, n=l → "defend the castle".</div>
   </div>
 
@@ -956,7 +967,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">From the root CA or from self-generation</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">From the root CA only</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">In a hierarchical CA topology, a subordinate CA can obtain its certificate from the root CA or another subordinate CA at a higher level. Only the root CA can issue a self-signing certificate.</div>
   </div>
 
@@ -969,7 +980,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To authenticate the identity of the system with a vendor website</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To generate a virtual ID</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Code signing is used to verify the integrity of executable files downloaded from a vendor website using digital certificates.</div>
   </div>
 
@@ -982,7 +993,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">PKI certificates</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Symmetric keys</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">A PKI Certificate Authority is a trusted third-party entity that issues PKI certificates, providing authenticity, confidentiality, integrity, and nonrepudiation services.</div>
   </div>
 
@@ -995,7 +1006,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Integrity</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Confidentiality</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Integrity is ensured by implementing MD5 or SHA hash algorithms. Authentication uses HMAC protocols. Confidentiality uses DES, 3DES, AES, RSA, or PKI.</div>
   </div>
 
@@ -1008,7 +1019,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Caesar</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Vigenère</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">RC4 is an example of the one-time pad cipher widely used on the Internet. Caesar is a substitution cipher; Vigenère is based on Caesar; rail fence is a transposition cipher.</div>
   </div>
 
@@ -1021,7 +1032,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Data confidentiality</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Origin authentication</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Origin authentication guarantees that the message is not a forgery and does actually come from who it states it comes from.</div>
   </div>
 
@@ -1034,14 +1045,24 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It ensures that the person gaining access to a network device is authorized.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It authenticates a website and establishes a secure connection to exchange confidential data.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Digital signatures commonly use digital certificates to verify the identity of the originator, authenticate a vendor website, and establish an encrypted connection to exchange confidential data.</div>
+  </div>
+
+  <div class="checkpoint-footer">
+    <button class="btn btn-submit" onclick="submitCheckpoint(this)">Submit Checkpoint</button>
+    <button class="btn btn-reset-checkpoint" onclick="resetCheckpoint(this)">Reset Checkpoint</button>
   </div>
 </div>
 
 <!-- SECTION 4 – VPNs (18–19) -->
 <div class="section" id="s4">
   <div class="section-title">VPNs <span>Modules 18–19</span></div>
+
+  <div class="checkpoint-score">
+    <span class="checkpoint-score-label">Checkpoint Score</span>
+    <div class="checkpoint-score-bar"><div class="checkpoint-score-fill" id="scoreBar4"></div></div>
+    <span class="checkpoint-score-value" id="scoreVal4">0 / 0</span>
+  </div>
 
 
   <div class="q-card" data-type="single" data-correct="3">
@@ -1053,7 +1074,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">3DES</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IKE</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">IKE (Internet Key Exchange) negotiates security associations (SAs) and calculates shared keys for IPsec VPN tunnels.</div>
   </div>
 
@@ -1067,7 +1088,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ISAKMP security associations are exchanged.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Interesting traffic is identified.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">During IKE Phase 2, IPsec peers exchange the IPsec security associations (SAs) that each peer is willing to use to establish the IPsec tunnel.</div>
   </div>
 
@@ -1080,7 +1101,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To force IKE Phase 1 negotiations to begin</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To negotiate the SA policy</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">The crypto map command, along with the policy name, is used to bind the interface to the ISAKMP policy created previously.</div>
   </div>
 
@@ -1093,7 +1114,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">R1 will try to match policy #203 with the most secure default policy on R2.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">R1 will begin to try to match policy #1 with policy #65514 on R2.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Peers attempt to negotiate using the policy with the lowest number (highest priority). Peers do not require matching priority numbers.</div>
   </div>
 
@@ -1106,7 +1127,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The length of a key will not vary between encryption algorithms.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">The longer the key, the more key possibilities exist.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">The longer the key, the harder it is to break. A 64-bit key may take 1 year; a 128-bit key may take 10¹⁹ years to decrypt with a sophisticated computer.</div>
   </div>
 
@@ -1120,7 +1141,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">OSPF</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">GRE</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">GRE (Generic Routing Encapsulation) encapsulates multiprotocol traffic between Cisco routers. GRE does not encrypt data.</div>
   </div>
 
@@ -1133,7 +1154,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Packets are disguised to look like other types of traffic.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A dedicated circuit is established between the source and destination devices.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Tunneling encapsulates packets with headers from one or more VPN protocols before they are sent across the third party network.</div>
   </div>
 
@@ -1148,7 +1169,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec works at the transport layer and protects data at the network layer.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec is a framework of open standards that relies on existing algorithms.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">IPsec is a framework of open standards that relies on existing algorithms for confidentiality, integrity, authentication, and secure key exchange.</div>
   </div>
 
@@ -1161,7 +1182,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It requires a VPN gateway at each end of the tunnel to encrypt and decrypt traffic.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It requires a client/server architecture.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Site-to-site VPNs are static and require a VPN gateway at each end to encapsulate and decapsulate traffic. Hosts have no knowledge of the VPN.</div>
   </div>
 
@@ -1174,7 +1195,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To define what traffic is allowed through and protected by the tunnel</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To define only the allowed encryption algorithms</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">The transform set defines what encryption and authentication schemes can be used, negotiated during Phase 2 of the IPsec VPN connection process.</div>
   </div>
 
@@ -1187,7 +1208,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Access list</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Transform set</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">An access list with a permit statement identifies interesting traffic. Once matched, tunnel security associations can be negotiated.</div>
   </div>
 
@@ -1200,7 +1221,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To configure the IPsec tunnel lifetime</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To provide encryption through the IPsec tunnel</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">GRE supports multiprotocol tunneling and can encapsulate multiple OSI Layer 3 protocol packet types inside an IP tunnel. GRE does not provide encryption.</div>
   </div>
 
@@ -1213,7 +1234,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Site-to-site VPN</span></option>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Remote access VPN using IPsec</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Site-to-site VPN is an extension of a classic WAN network that provides a static interconnection of entire networks — the most cost-effective method for connecting two corporate networks.</div>
   </div>
 
@@ -1226,14 +1246,25 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec supports all traffic permitted through an ACL.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">IPsec only supports unicast traffic.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">IPsec only supports unicast traffic. If multicast traffic needs to travel through a tunnel, a GRE tunnel must be configured between the peers.</div>
+  </div>
+
+  <div class="checkpoint-footer">
+    <button class="btn btn-submit" onclick="submitCheckpoint(this)">Submit Checkpoint</button>
+    <button class="btn btn-reset-checkpoint" onclick="resetCheckpoint(this)">Reset Checkpoint</button>
+    <button class="btn btn-show-answers" onclick="showAnswers(this)">Show Answers</button>
   </div>
 </div>
 
 <!-- SECTION 5 – ASA (20–22) -->
 <div class="section" id="s5">
   <div class="section-title">ASA <span>Modules 20–22</span></div>
+
+  <div class="checkpoint-score">
+    <span class="checkpoint-score-label">Checkpoint Score</span>
+    <div class="checkpoint-score-bar"><div class="checkpoint-score-fill" id="scoreBar5"></div></div>
+    <span class="checkpoint-score-value" id="scoreVal5">0 / 0</span>
+  </div>
 
   <div class="q-card" data-type="single" data-correct="0">
     <div class="q-num">QUESTION 01</div>
@@ -1244,7 +1275,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Password cracking</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Network scanning</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">An integrity checking system can report login and logout activities. Network scanning detects user names, groups, and shared resources by scanning TCP ports.</div>
   </div>
 
@@ -1258,7 +1289,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Nessus</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Zenmap</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Zenmap is the GUI version of Nmap. Nessus scans for software vulnerabilities. SuperScan is a Microsoft port scanning tool. SIEM is used for real-time security event reporting.</div>
   </div>
 
@@ -1271,7 +1302,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Detecting configuration changes on network systems</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Detecting weak passwords</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Penetration testing determines the possible consequences of successful attacks on the network. Vulnerability scanning detects weaknesses. Password cracking detects weak passwords.</div>
   </div>
 
@@ -1284,7 +1315,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It can simulate attacks from malicious sources.</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">It can log abnormal activity.</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Network scanning helps identify open TCP and UDP ports that could be targets of an attack, strengthening network security.</div>
   </div>
 
@@ -1299,7 +1330,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Upper layer protocol</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Source and destination MAC address</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Network objects can be configured with an IP address and mask. Service objects can be configured with a protocol or port ranges.</div>
   </div>
 
@@ -1312,7 +1343,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Identifying interesting traffic</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Using ACLs to match traffic</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Policy maps bind class maps with actions. Class maps identify Layer 3/4 traffic. Service policies attach the policy map to an interface.</div>
   </div>
 
@@ -1325,7 +1356,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">NAT</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">VPN connectivity</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">An ASA in transparent mode functions like a Layer 2 device and does not support dynamic routing protocols, VPNs, QoS, or DHCP. The IP address is used for management.</div>
   </div>
 
@@ -1338,7 +1369,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A purchased Base license</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">A purchased AnyConnect Premium license</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">The Security Plus upgrade license supports a higher connection capacity and up to 50 IPsec VPN users on the ASA 5506-X.</div>
   </div>
 
@@ -1351,7 +1382,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Security zones</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Stateful packet inspection</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">Stateful packet inspection allows return traffic sourced on the outside network to be received by the originating sender on the internal network.</div>
   </div>
 
@@ -1365,7 +1396,7 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">dhcpd address IP_address1 [ -IP_address2 ] if_name</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">ip address pppoe</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
+    
     <div class="explanation">PPPoE is used when connecting to an upstream DSL device. The <em>ip address pppoe</em> command is used for point-to-point connectivity over Ethernet services.</div>
   </div>
 
@@ -1378,7 +1409,6 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To assess configuration against established policies, recommended best practices, and compliance standards</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">To detect unauthorized wired network access</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">Tripwire assesses configuration against established policies, recommended best practices, and compliance standards.</div>
   </div>
 
@@ -1391,8 +1421,12 @@
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Nessus</span></label>
       <label class="option"><input type="radio"><div class="radio-box"></div><span class="option-label">Metasploit</span></label>
     </div>
-    <div class="q-footer"><button class="btn btn-check" onclick="checkQ(this)">Check</button><button class="btn btn-reset" onclick="resetQ(this)">Reset</button></div>
     <div class="explanation">L0phtCrack is a password auditing and recovery application. SuperScan detects open ports. Nessus scans vulnerabilities. Metasploit aids penetration testing.</div>
+  </div>
+
+  <div class="checkpoint-footer">
+    <button class="btn btn-submit" onclick="submitCheckpoint(this)">Submit Checkpoint</button>
+    <button class="btn btn-reset-checkpoint" onclick="resetCheckpoint(this)">Reset Checkpoint</button>
   </div>
 
 </div>
@@ -1466,6 +1500,67 @@ function updateScore() {
   });
   document.getElementById('scoreVal').textContent = `${correct} / ${checked.length} checked`;
   document.getElementById('progressFill').style.width = checked.length > 0 ? `${(correct/checked.length)*100}%` : '0%';
+}
+
+function submitCheckpoint(btn) {
+  const section = btn.closest('.section');
+  const sectionId = section.id;
+  const sectionNum = sectionId.replace('s', '');
+  
+  const cards = section.querySelectorAll('.q-card:not(.checked)');
+  cards.forEach(card => {
+    card.classList.add('checked');
+    
+    // Check if question was answered
+    const opts = card.querySelectorAll('.option');
+    const selectedIdxs = [];
+    opts.forEach((o, i) => { if (o.classList.contains('selected')) selectedIdxs.push(i); });
+    
+    // If no answer selected, mark as unanswered
+    if (selectedIdxs.length === 0) {
+      card.classList.add('unanswered');
+    }
+    
+    const correctIdxs = card.dataset.correct.split(',').map(Number);
+    opts.forEach((opt, idx) => {
+      const isCorrect = correctIdxs.includes(idx);
+      const isSelected = opt.classList.contains('selected');
+      if (isCorrect) opt.classList.add('correct');
+      else if (isSelected && !isCorrect) opt.classList.add('wrong');
+    });
+    card.querySelector('.explanation').classList.add('visible');
+  });
+  
+  // Calculate checkpoint score
+  const allCards = section.querySelectorAll('.q-card');
+  let correct = 0;
+  allCards.forEach(card => {
+    const correctIdxs = card.dataset.correct.split(',').map(Number);
+    const opts = card.querySelectorAll('.option');
+    const selectedIdxs = [];
+    opts.forEach((o, i) => { if (o.classList.contains('selected')) selectedIdxs.push(i); });
+    const match = correctIdxs.length === selectedIdxs.length &&
+      correctIdxs.every(i => selectedIdxs.includes(i));
+    if (match) correct++;
+  });
+  
+  const total = allCards.length;
+  document.getElementById('scoreVal' + sectionNum).textContent = `${correct} / ${total}`;
+  document.getElementById('scoreBar' + sectionNum).style.width = total > 0 ? `${(correct/total)*100}%` : '0%';
+  updateScore();
+}
+
+function resetCheckpoint(btn) {
+  const section = btn.closest('.section');
+  const cards = section.querySelectorAll('.q-card');
+  cards.forEach(card => {
+    card.classList.remove('checked', 'unanswered');
+    card.querySelectorAll('.option').forEach(o => {
+      o.classList.remove('selected','correct','wrong');
+    });
+    card.querySelector('.explanation').classList.remove('visible');
+  });
+  updateScore();
 }
 </script>
 </body>
